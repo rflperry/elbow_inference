@@ -1,2 +1,7 @@
-# elbow_inference
-Selective inference on the elbows of SVD decompositions
+# Post-selection inference on the proportion of variance explained by PCA
+
+Principal component analysis  (PCA) is a longstanding and well-studied approach for dimension reduction. It rests upon the assumption that the underlying signal in the data has low rank, and thus  can be well-summarized using a small number of dimensions. The output of PCA is typically represented using a scree plot, which displays the proportion of variance explained (PVE) by each principal component. 
+While the PVE is extensively reported in routine data analyses, to the best of our knowledge the notion of inference on the PVE remains unexplored. 
+
+We  consider inference on the PVE. We first introduce a new population quantity for the PVE with respect to an unknown matrix mean. Critically, our interest lies in the PVE of the sample principal components (as opposed to unobserved population principal components); thus, the population PVE that we introduce is defined conditional on the sample singular vectors. 
+We  show that it is possible to conduct inference, in the sense of confidence intervals and p-values, on this population quantity. Furthermore, we can conduct valid inference on the PVE of a subset of the principal components, even when the subset is selected  using a data-driven approach such as the elbow rule. We demonstrate the proposed approach in simulation and in an application to a gene expression dataset.
