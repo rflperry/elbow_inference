@@ -83,7 +83,7 @@ compute_neg_loglik <- function(vals, k, n, p, sigma, bounds, eigen=FALSE, theta=
   return( neg_loglik )
 }
 
-get_mle <- function(vals, k, n, p, sigma, bounds=c(0, Inf), eigen=eigen) {
+get_mle_signal <- function(vals, k, n, p, sigma, bounds=c(0, Inf), eigen=eigen) {
 
   fn <- function(theta) {
     nll <- compute_neg_loglik(
@@ -107,7 +107,7 @@ get_mle <- function(vals, k, n, p, sigma, bounds=c(0, Inf), eigen=eigen) {
 }
 
 
-get_median <- function(
+get_median_signal <- function(
   test, vals, k, n, p, sigma, bounds=c(0, Inf), eigen=FALSE, root_lb=-20, root_ub=20, num_stab=0
 ) {
   alpha <- 0.5  # median
@@ -177,15 +177,69 @@ get_pve <- function(theta, val_k, val_sum) {
   return( pve )
 }
 
+########### Non-central chi-squared MLE
 
-# fn <- function(theta) {
-#   return(
-#     compute_neg_loglik(
-#       vals, k, n, p, sigma, bounds=bounds, eigen=eigen, theta=theta
-#     )
-#   )
-# }
-# 
-# thetas <- seq(-1, 5, 0.1)
-# neg_liks <- lapply(thetas, fn)
-# plot(thetas, neg_liks)
+nc_chsq <- function(z, x, sigma=1) {
+  if (z < -x^2 / 4) {
+    return(0)
+  } else {
+    e1 <- (-x + sqrt(x^2 + 4*z)) / 2
+    e2 <- (-x - sqrt(x^2 + 4*z)) / 2
+    return( dnorm(e1, sd=sigma) + dnorm(e2, sd=sigma) )
+  }
+}
+
+get_mle_nc_chisq <- function(x, df) {
+  fn <- function(ncp) {
+    # To minimize the negative likelihood
+    -dchisq(x, df=df, ncp=ncp)
+  }
+  
+  opt <- NA
+  try({
+    opt <- optim(0, fn, method = "L-BFGS-B")$par
+  }, silent = TRUE)
+  if (is.na(opt)) {
+    warning("L-BFGS-B optimizer failed, using robust Nelder and Mead optimizer")
+    opt <- optim(0, fn)$par
+  }
+  
+  return(opt)
+}
+
+########### Norm MLE
+
+norm_lik <- function(z, x, sigma=1) {
+  if (z < -x^2 / 4) {
+    return(0)
+  } else {
+    e1 <- (-x + sqrt(x^2 + 4*z)) / 2
+    e2 <- (-x - sqrt(x^2 + 4*z)) / 2
+    return( dnorm(e1, sd=sigma) + dnorm(e2, sd=sigma) )
+  }
+}
+
+get_mle_norm <- function(X, sigma=1) {
+  
+  mle <- 0
+  
+  X <- c(X)
+  for (i in 1:length(X)) {
+    fn <- function(z) {
+      norm_lik(z, X[i], sigma)
+    }
+    
+    opt <- NA
+    try({
+      opt <- optim(0, fn, method = "L-BFGS-B")$par
+    }, silent = TRUE)
+    if (is.na(opt)) {
+      warning("L-BFGS-B optimizer failed, using robust Nelder and Mead optimizer")
+      opt <- optim(0, fn)$par
+    }
+    
+    mle <- mle + opt
+  }
+
+  return(mle + sum(X^2))
+}

@@ -85,7 +85,7 @@ conf_interval_solver <- function(
   return(c(ci_lb, ci_ub))
 }
 
-get_pve_ci <- function(ci_lower, ci_upper, val_k, val_sum) {
+get_pve_ci <- function(ci_lower, ci_upper) { #, val_k, val_sum) {
   
   if (is.na(ci_lower) | is.na(ci_upper) ) {
     return(c(NA, NA))
@@ -101,8 +101,32 @@ get_pve_ci <- function(ci_lower, ci_upper, val_k, val_sum) {
   #   sign(ci_lower) == sign(ci_upper),
   #   pmin( ci_lower^2, ci_upper^2 ), 0)
   # sq_ci_upper <- pmax( ci_lower^2, ci_upper^2 )
-  estimator_ci_lower <- sq_ci_lower / ( val_sum - val_k + sq_ci_lower)
-  estimator_ci_upper <- sq_ci_upper / ( val_sum - val_k + sq_ci_upper)
+  # estimator_ci_lower <- sq_ci_lower / ( val_sum - val_k + sq_ci_lower)
+  # if (sq_ci_upper == Inf | sq_ci_lower == Inf) {
+  #   estimator_ci_upper <- 1
+  # } else {
+  #   estimator_ci_upper <- sq_ci_upper / ( val_sum - val_k + sq_ci_upper)
+  # }
   
-  return(c( estimator_ci_lower, estimator_ci_upper ))
+  
+  return(c( sq_ci_lower, sq_ci_upper ))
+}
+
+get_nc_chsq_ci <- function(frob_hat, df, alpha) {
+  ci_lb <- uniroot(
+    function(frob) {
+      pchisq(frob_hat, df = df, ncp = frob) - (1 - alpha / 2)
+    },
+    interval = c(0, n*p*100)
+  )$root
+
+
+  ci_ub <- uniroot(
+    function(frob) {
+      pchisq(frob_hat, df = df, ncp = frob) - ( alpha / 2)
+    },
+    interval = c(0, df*100)
+  )$root
+
+  return(c(ci_lb, ci_ub))
 }

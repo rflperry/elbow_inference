@@ -8,7 +8,7 @@ simulate_global_null <- function (n, p, sigma){
   return(array(rnorm(n*p, sd=sigma), dim=c(n, p)))
 }
 
-simulate_matrix <- function (n, p, sigma, rank, m, degree=1, eigen=TRUE, offset=0){
+simulate_matrix <- function (n, p, sigma, rank, m, degree=1, eigen=TRUE, offset=0, thin_c=NA){
   UV <- array(rnorm(n*p, sd=sigma), dim=c(n, p))
   duv <- svd(UV)
   U <- duv$u
@@ -20,7 +20,15 @@ simulate_matrix <- function (n, p, sigma, rank, m, degree=1, eigen=TRUE, offset=
   mean_mat <- U %*% diag(vals) %*% t(V)
   results <- {}
   results$mean_mat <- mean_mat
-  results$obsv_mat <- mean_mat + array(rnorm(n*p, sd=sigma), dim=c(n, p))
+  H <- array(rnorm(n*p, sd=sigma), dim=c(n, p))
+  
+  if(!is.na(thin_c)) {
+    results$obsv_mat <- mean_mat + H * sqrt(1 + c^2)
+    results$obsv_mat2 <- mean_mat - H * sqrt(1 + 1/c^2)
+  } else {
+    results$obsv_mat <- mean_mat + H
+  }
+  
   return(results)
 }
 
