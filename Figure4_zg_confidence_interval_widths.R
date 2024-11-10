@@ -1,160 +1,28 @@
 library(dplyr)
 library(tidyr)
+library(ggplot2)
+library(viridis) 
+library(stringr)
+library(scales)
+library(latex2exp)
+library(argparse)
 
 source("./scripts/functions/confidence_intervals.R")
 source("./scripts/functions/selection_methods.R")
 source("./scripts/functions/simulations.R")
 source("./scripts/functions/estimation.R")
 
-#
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  Run Simulation
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#
-
-n = 50
-p = 10
-rank = 5
-m = 1
-eigen = TRUE
-reps <- 1000
-alpha <- 0.5
-
-# sigmas_list <- c(0.1, 0.15, 0.2, 0.3, 0.4, 0.7, 1)
-selection_rule = "zg" # options include "zg", "elbow"
-if (selection_rule == "zg") {
-  sigmas_list <- c(0.1, 0.2) # c(0.2, 0.4, 0.7, 1)
-  degree <- 0.4
-} else if (selection_rule == "elbow") {
-  sigmas_list <- c(0.1, 0.2, 0.3, 1, 2)
-  degree <- 1
-}
-
-c <- sqrt(1)
-signal_alpha_frac <- 1 - 1/100
-
-args = commandArgs(trailingOnly=TRUE)
-
-if (length(args) > 0) {
-  selection_rule <- args[1]
-  reps <- as.numeric(args[2])
-  c <- sqrt(as.numeric(args[3]))
-  signal_alpha_frac <- as.numeric(args[4])
-}
-
-results <- c()
-
-for (rep in 1:reps) {
-  for (sigma in sigmas_list) {
-    try({
-      # Simulate data
-      sim <- simulate_matrix(n, p, sigma, rank, m, degree=degree, eigen=eigen, thin_c=c)
-      
-      # Extract quantities
-      duv <- svd(sim$obsv_mat)
-      
-      if (eigen) {
-        vals <- duv$d^2
-      } else {
-        vals <- duv$d
-      }
-      
-      sigma1 <- sqrt( sigma^2 * (1 + c^2) )
-      sigma2 <- sqrt( sigma^2 * (1 + 1/c^2) )
-      
-      X2_frob_norm <- sqrt(sum(sim$obsv_mat2^2))
-      frob2_hat <- X2_frob_norm^2 - n * p * sigma2^2
-      frob_norm <- sqrt(sum(sim$mean_mat^2))
-
-      frob_ci <- sqrt( sigma2^2 * get_nc_chsq_ci(X2_frob_norm^2 / sigma2^2, n*p, alpha * ( 1- signal_alpha_frac)) )
-      frob_mle <- sqrt( sigma2^2 * get_mle_nc_chisq(X2_frob_norm^2 / sigma2^2, n*p) )
-      
-      # Perform selection
-      if (selection_rule == "zg") {
-        r <- select_r_zg(vals)
-      } else if (selection_rule == "elbow") {
-        r <- select_r_elbow(vals)[1]
-      }
-      
-      for (k in seq(1, r)) {
-        # Base quantities to save
-        tr_mean <- (t(duv$u[,k]) %*% sim$mean_mat %*% duv$v[,k])[1]
-        
-        # Compute intervals
-        base_results <- c(rep, n, p, sigma, c, m, rank, r, k, tr_mean, frob_norm, vals[k], sum(vals), X2_frob_norm, frob_ci, frob_mle, frob2_hat)
-        
-        # Choi p-value
-        ci <- conf_interval_solver(
-          choi_test_pvalue, vals, k, n, p, sigma=sigma1, alpha=alpha * signal_alpha_frac, eigen=eigen
-        )
-        # ci[1] <- ci[1] / frob_ci[2]
-        # ci[2] <- ci[2] / frob_ci[1]
-        
-        choi_mle <- NaN
-        try({
-          choi_mle <- get_mle_signal(
-            vals, k, n, p, sigma1, eigen=eigen
-          )
-        })
-        
-        choi_median <- get_median_signal(
-          choi_test_pvalue, vals, k, n, p, sigma=sigma1, eigen=eigen
-        )
-        
-        results <- c(results, 'Choi', base_results, ci, choi_mle, choi_median)
-        
-        # Choi p-value, w/ Bonferroni correction
-        # ci <- conf_interval_solver(
-        #   choi_test_pvalue, vals, k, n, p, sigma=sigma, alpha=alpha / (p-2), eigen=eigen
-        # )
-        # results <- c(results, 'Choi (Bf.)', base_results, ci, choi_mle, choi_median, mean(ci))
-        
-        # Selective inference p-value (R >= k)
-        # Acquire bounds
-        if (selection_rule == "zg") {
-          bounds <- compute_constraint_regions(vals, k, select_r_zg, tol=1000)
-        } else if (selection_rule == "elbow") {
-          bounds <- compute_elbow_bounds(vals, k)
-        }
-        
-        si_mle <- NaN
-        try({
-          si_mle <- get_mle_signal(
-            vals, k, n, p, sigma1, bounds=bounds, eigen=eigen
-          )
-        })
-        si_median <- get_median_signal(
-          si_test_pvalue, vals, k, n, p, sigma=sigma1, bounds=bounds, eigen=eigen
-        )
-        
-        ci <- conf_interval_solver(
-          si_test_pvalue, vals, k, n, p, sigma=sigma1, alpha=alpha * signal_alpha_frac, bounds=bounds, eigen=eigen
-        )
-        results <- c(results, 'Selective inference', base_results, ci, si_mle, si_median)
-      }
-    })
-  }
-}
-
-#
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# 	Process data and save
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#
-
-header <- c(
-  "method", "rep", "n", "p", "sigma", "thin_c", "signal_strength",
-  'rank', 'selection_r', 'tested_k', 'signal', "frob_norm", 'val_k', 'val_sum',
-  "X2_frob_norm", "frob_ci_lower", "frob_ci_upper", "frob_mle", "frob2_hat", 'ci_lower', 'ci_upper', 'mle', 'median')
-
-results_df <- data.frame(
-  data=t(array(results, dim = c(length(header), length(results)/length(header)))))
-colnames(results_df) <- header
-results_df[,2:length(header)] <- sapply(results_df[,2:length(header)], as.numeric)
-head(results_df)
-print(nrow(results_df[complete.cases(results_df),]) / nrow(results_df))
-
-save(results_df, file=paste0("data/", selection_rule, "-c2=", c^2, "-alpha_frac=", signal_alpha_frac, "-ci_vs_sigma.RData"))
+## -----------------------------------------
+## Load any command line arguments
+## -----------------------------------------
+parser <- ArgumentParser()
+parser$add_argument("input_file", nargs=1, help="File to be displayed")
+parser$add_argument("--sigmas", 
+                    type = "double", 
+                    nargs = "+",
+                    default = c(0.1, 0.2))
+print(commandArgs(trailingOnly = TRUE))
+args <- parser$parse_args()
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -162,25 +30,21 @@ save(results_df, file=paste0("data/", selection_rule, "-c2=", c^2, "-alpha_frac=
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-library(ggplot2)
-library(viridis) 
-library(stringr)
-library(scales)
-library(latex2exp)
+fname <- paste0("figures/Figure4_", sub("\\.RData$", ".png", basename(args$input_file)))
 
-# selection_rule <- "elbow"
-if (selection_rule == "zg") {
-  plot_sigmas <- c(0.1, 0.2) # c(0.2, 0.4, 0.7, 1)
-} else if (selection_rule == "elbow") {
-  plot_sigmas <- sigmas_list # c(0.3, 1)
-}
+# # selection_rule <- "elbow"
+# if (selection_rule == "zg") {
+#   plot_sigmas <- c(0.1, 0.2) # c(0.2, 0.4, 0.7, 1)
+# } else if (selection_rule == "elbow") {
+#   plot_sigmas <- sigmas # c(0.3, 1)
+# }
 
 theme_update(text = element_text(size=10, family="Times"))
 color_map <- c("Choi et al. (2017)" = hue_pal()(3)[1], "Choi et al. (2017) [Bf]" = hue_pal()(3)[2], "Selective Inference" = hue_pal()(3)[3])
 scale_map <- c("Choi et al. (2017)" = 16, "Choi et al. (2017) [Bf]" = 17, "Selective Inference" = 15)
 linetype_map <- c( "Selective Inference" = "solid", "Choi et al. (2017)" = "dashed")
 
-load(paste0("data/", selection_rule, "-c2=", c^2, "-alpha_frac=", signal_alpha_frac, "-ci_vs_sigma.RData"))
+load(args$input_file)
 
 results_df <- results_df %>%
   # drop_na() %>%
@@ -211,7 +75,7 @@ plot_df <- results_df %>%
   ) %>% subset(
     method == "Selective"
   ) %>%
-  subset(selection_r == 5) %>%
+  subset(selection_r == rank) %>%
   group_by(
     method, sigma, precision, tested_k
   ) %>%
@@ -235,7 +99,7 @@ plot_df <- results_df %>%
 head(plot_df)
 
 # Scatter plot with different colors and shapes
-g <- ggplot(plot_df %>% subset(sigma %in% plot_sigmas), aes(x = tested_k, y = mean_pve)) +
+g <- ggplot(plot_df, aes(x = tested_k, y = mean_pve)) +
   geom_point(aes(
     x = tested_k, y = mean_pve_naive,
     color = "Naive",
@@ -284,5 +148,5 @@ g <- ggplot(plot_df %>% subset(sigma %in% plot_sigmas), aes(x = tested_k, y = me
   ) +
   facet_wrap(~ sigma)
 show(g)
-ggsave(paste0('./figures/Figure4-', selection_rule, "-c2=", c^2, "-alpha_frac=", signal_alpha_frac, '-coverage_screeplot.png'), width = 5.5, height = 2, unit = "in")
+ggsave(fname, width = 5.5, height = 2, unit = "in")
 
