@@ -53,7 +53,7 @@ if (selection_rule == "zg") {
 # Output args to global variables
 list2env(as.list(args), envir = .GlobalEnv)
 
-fname <- "sim_conf_ints_"
+fname <- "sim_conf_ints"
 
 for (arg_name in names(args)) {
   arg_value <- args[[arg_name]]
