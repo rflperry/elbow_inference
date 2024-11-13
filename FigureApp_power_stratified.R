@@ -18,7 +18,7 @@ source("./scripts/functions/confidence_intervals.R")
 ## -----------------------------------------
 
 args <- list()
-args$input_file <- "data/sim_hypo_tests_alpha=0.1_m=1_method=zg_n=100_p=50_rank=10_reps=1000.RData"
+args$input_file <- "data/sim_hypo_tests_alpha=0.1_m=1_method=zg_n=50_p=10_rank=2_reps=1000.RData"
 
 parser <- ArgumentParser()
 parser$add_argument("input_file", nargs=1, help="File to be displayed")
