@@ -41,3 +41,6 @@ vignettes/*.pdf
 # Folders
 data/
 logs/
+
+# VScode files
+.lintr

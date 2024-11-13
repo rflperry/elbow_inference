@@ -30,7 +30,7 @@ if (selection_rule == "zg") {
 }
 
 c <- sqrt(1)
-signal_alpha_frac <- 0.9
+signal_alpha_frac <- 0.75
 
 args = commandArgs(trailingOnly=TRUE)
 

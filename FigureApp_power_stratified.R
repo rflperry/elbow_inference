@@ -1,5 +1,11 @@
 library(dplyr)
 library(tidyr)
+library(ggplot2)
+library(viridis) 
+library(stringr)
+library(scales)
+library(latex2exp)
+library(argparse)
 
 source("./scripts/functions/hypothesis_tests.R")
 source("./scripts/functions/randomized_test.R")
@@ -7,20 +13,17 @@ source("./scripts/functions/selection_methods.R")
 source("./scripts/functions/simulations.R")
 source("./scripts/functions/confidence_intervals.R")
 
-#
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#  Run Simulation
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#
+## -----------------------------------------
+## Load any command line arguments
+## -----------------------------------------
 
-# See Figure4_zg_confidence_interval_width.R
+args <- list()
+args$input_file <- "data/sim_hypo_tests_alpha=0.1_m=1_method=zg_n=100_p=50_rank=10_reps=1000.RData"
 
-#
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# 	Process data and save
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#
-
+parser <- ArgumentParser()
+parser$add_argument("input_file", nargs=1, help="File to be displayed")
+print(commandArgs(trailingOnly = TRUE))
+args <- parser$parse_args()
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -28,17 +31,19 @@ source("./scripts/functions/confidence_intervals.R")
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-library(ggplot2)
-library(viridis) 
-library(stringr)
-library(scales)
-library(latex2exp)
+power_fname <- paste0("figures/FigureApp_", sub("\\.RData$", "-power_stratified.png", basename(args$input_file)))
 
-selection_rule = "elbow"
+#
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# 	Plot the figure
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#
+
+alpha <- 0.1
 
 theme_update(text = element_text(size=10, family="Times"))
 
-load(paste0("data/", selection_rule, "-ci_vs_sigma.RData"))
+load(args$input_file)
 
 results_df <- results_df %>%
   # drop_na() %>%
@@ -48,42 +53,31 @@ results_df <- results_df %>%
       method == "Choi" ~ "Unselective", # "Choi et al. (2017)",
       method == "Choi (bf.)" ~ "Choi et al. (2017) [Bf.]",
     ),
-    sigma <- sigma^2,
-    pve_ci_lower = mapply(get_pve_ci, ci_lower, ci_upper, val_k, val_sum)[1, ],
-    precision = 1/sigma,
-    reject_null = as.numeric((pve_ci_lower > 0)),
+    precision = 1/sigma^2,
+    reject_null = as.numeric((p_value <= alpha)),
   ) %>% subset(
     method != "Choi et al. (2017) [Bf.]"
   )
 head(results_df)
 
 plot_df <- results_df %>%
-  # drop_na() %>%
-  subset(selection_r == 5) %>%
   group_by(
-    method, sigma, precision, tested_k
+    method, precision, tested_k, selection_r
   ) %>%
   summarise(
     power = mean(reject_null, na.rm=TRUE)
   )
 head(plot_df)
 
-######### plot detection probability
-g_dp <- ggplot(
-  results_df %>% group_by(precision) %>% summarise(detection_probability = mean(selection_r == rank)),
-  aes(x=precision, y=detection_probability)) +
-  geom_line() +
-  geom_point(size=1) +
-  xlab('1 / Variance') +
-  ylab('Detection probability') +
-  scale_x_log10() +
-  theme(text=element_text(size=10)) +
-  theme_bw()
-plot(g_dp)
-ggsave(paste0('figures_FINAL/Figure5-', selection_rule, '-detection_probability_vs_sigma.png'), width = 2, height = 2, unit = "in")
-
 # Scatter plot with different colors and shapes
-g <- ggplot(plot_df %>% subset(method == 'Selective'), aes(x = precision, y = power, color = as.factor(tested_k))) +
+g <- ggplot(
+    plot_df %>% subset(method == 'Selective'),
+    aes(
+        x = precision,
+        y = power,
+        color = as.factor(tested_k),
+        sigma == 0.2
+        )) +
   geom_point() +
   geom_line() +
   labs(
@@ -109,7 +103,7 @@ g <- ggplot(plot_df %>% subset(method == 'Selective'), aes(x = precision, y = po
     legend.just = c("right", "top"),
     legend.title = element_text(size = 10), 
     legend.text = element_text(size = 8)
-  )
+  ) +
+  facet_wrap(~ selection_r, nrow = 2)
 show(g)
-ggsave(paste0('./figures_FINAL/Figure5-', selection_rule, '-power_vs_sigma.png'), width = 4, height = 2, unit = "in")
-
+ggsave(power_fname, width = 6, height = 4, unit = "in")

@@ -52,8 +52,8 @@ results_df <- results_df %>%
     pve_ci_lower = mapply(get_pve_ci, ci_lower, ci_upper)[1, ] / frob_ci_upper^2,
     pve_ci_upper = pmin(mapply(get_pve_ci, ci_lower, ci_upper)[2, ] / frob_ci_lower^2, 1),
     pve = (signal / frob_norm )^2,
-    pve_mle = mle^2 / frob_mle^2, # (mle / frob_mle)^2,
-    pve_hat = mle^2 / frob2_hat,
+    pve_mle = pmin(mle^2 / frob_mle^2, 1), # (mle / frob_mle)^2,
+    pve_hat = pmin(mle^2 / frob2_hat, 1),
     # pve_median = median^2 / ( val_sum - val_k + median^2),
     pve_naive = val_k / val_sum
   )
@@ -69,7 +69,7 @@ plot_df <- results_df %>%
       method == "Choi" ~ "Unselective", # "Choi et al. (2017)",
       method == "Choi (bf.)" ~ "Choi et al. (2017) [Bf.]",
     ),
-    precision = 1/sigma,
+    precision = 1/sigma^2,
     pve_covered = as.numeric((pve_ci_lower <= pve) & (pve <= pve_ci_upper)),
     pve_ci_width = pve_ci_upper - pve_ci_lower,
   ) %>% subset(
@@ -146,7 +146,7 @@ g <- ggplot(plot_df, aes(x = tested_k, y = mean_pve)) +
     legend.title = element_text(size = 10), 
     legend.text = element_text(size = 8)
   ) +
-  facet_wrap(~ sigma)
+  facet_wrap(~ sigma, scales="free_y")
 show(g)
 ggsave(fname, width = 5.5, height = 2, unit = "in")
 
