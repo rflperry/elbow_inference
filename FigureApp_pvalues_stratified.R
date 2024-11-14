@@ -26,8 +26,8 @@ parser$add_argument("--sigmas",
 print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
 
-# args <- list()
-# args$input_file <- "data/sim_hypo_tests_alpha=0.1_m=1_method=zg_n=50_p=10_rank=5_reps=1000.RData"
+args <- list()
+args$input_file <- "data/sim_hypo_tests_alpha=0.1_m=1_method=zg_n=50_p=10_rank=5_reps=1000.RData"
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -35,7 +35,7 @@ args <- parser$parse_args()
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-power_fname <- paste0("figures/FigureApp_", sub("\\.RData$", "-power_smoothed.png", basename(args$input_file)))
+power_fname <- paste0("figures/FigureApp_", sub("\\.RData$", "-pvalues_stratified.png", basename(args$input_file)))
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -59,7 +59,7 @@ results_df <- results_df %>%
     ),
     precision = 1 / sigma^2,
     reject_null = as.numeric((p_value <= alpha)),
-    signal_normalized = signal / sigma,
+    signal_normalized = signal / noise_op_norm,
     pve = signal^2 / frob_norm^2
   ) %>% subset(
     method != "Choi et al. (2017) [Bf.]"
@@ -68,27 +68,27 @@ head(results_df)
 
 g <- ggplot(
   results_df %>% subset(
-    method == "Selective" &
-      selection_r == rank # &
+    method == "Selective"
   ),
-  aes(x = signal_normalized, y = reject_null, color = as.factor(tested_k))
+  aes(x = signal, y = log(abs(log(p_value))), color = as.factor(tested_k))
 ) +
   geom_point() +
-  # geom_smooth(method = "loess", se = FALSE, span = 200) +
+  # geom_smooth(method = "loess", se = FALSE, span=200) +
   # geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), se = FALSE) +
-  geom_smooth(
-    formula = "y ~ x", method = "glm",
-    method.args = list(family = "quasibinomial"), se = F
-  ) +
+  # geom_smooth(
+  #   formula = "y ~ x", method = "glm",
+  #   method.args = list(family = "quasibinomial"), se = F
+  # ) +
+  geom_hline(yintercept = log(abs(log(0.1))), linetype = "dashed", color = "black") +
   scale_color_viridis(discrete = TRUE, option = "D") +
   scale_fill_viridis(discrete = TRUE) +
   labs(
     x = "Signal",
-    y = "Reject",
+    y = "loglog p-value",
     col = "Tested index k"
   ) +
   theme_bw() +
-  coord_cartesian(ylim = c(0.04, NA)) +
+  # coord_cartesian(ylim = c(0.04, NA)) +
   theme(
     # legend.direction = "horizontal",
     # ylim(0, NA),
@@ -102,6 +102,7 @@ g <- ggplot(
     legend.just = c("right", "top"),
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 8)
-  )
+  ) +
+  facet_wrap(~ selection_r) #, scale="free_y")
 show(g)
-ggsave(power_fname, width = 4, height = 4, unit = "in")
+ggsave(power_fname, width = 6, height = 4, unit = "in")

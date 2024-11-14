@@ -1,8 +1,8 @@
 # Generate a timestamp
 timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 
-fname="simulate_confidence_intervals"
-# fname="simulate_hypothesis_tests"
+# fname="simulate_confidence_intervals"
+fname="simulate_hypothesis_tests"
 
 # Define the log file with the timestamp in its name
 log_file="logs/$fname"_"$timestamp.log"
@@ -12,8 +12,7 @@ Rscript "$fname.R" > "$log_file" \
     -n 50 \
     -p 10 \
     --rank 5 \
-    --reps 10000 \
-    --sigmas 0.2 \
+    --reps 1000 \
     2>&1
     # -n 100 \
     # -m 2 \

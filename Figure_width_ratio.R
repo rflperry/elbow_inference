@@ -43,8 +43,8 @@ load(paste0("data/", selection_rule, "-c2=1-alpha_frac=0.5-ci_vs_sigma.RData"))
 results_df <- results_df %>%
   # drop_na() %>%
   mutate(
-    pve_ci_lower = mapply(get_pve_ci, ci_lower, ci_upper)[1, ] / frob_ci_upper^2,
-    pve_ci_upper = pmin(mapply(get_pve_ci, ci_lower, ci_upper)[2, ] / frob_ci_lower^2, 1),
+    pve_ci_lower = mapply(get_signal_squared_ci, ci_lower, ci_upper)[1, ] / frob_ci_upper^2,
+    pve_ci_upper = pmin(mapply(get_signal_squared_ci, ci_lower, ci_upper)[2, ] / frob_ci_lower^2, 1),
     pve = (signal / frob_norm )^2,
     pve_mle = mle^2 / frob_mle^2, # (mle / frob_mle)^2,
     pve_hat = mle^2 / frob2_hat,

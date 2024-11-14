@@ -163,8 +163,8 @@ theme_update(text = element_text(size = 10, family = "Times"))
 labels <- c(unname(TeX(r"( Selective $PVE_k(x)$ )")), unname(TeX(r"( Naive $\widehat{PVE}_k(x)$ )")))
 
 plot_df <- results_df %>% mutate(
-  pve_ci_lower = mapply(get_pve_ci, ci_lower, ci_upper)[1, ] / frob_ci_upper^2,
-  pve_ci_upper = pmin(mapply(get_pve_ci, ci_lower, ci_upper)[2, ] / frob_ci_lower^2, 1),
+  pve_ci_lower = mapply(get_signal_squared_ci, ci_lower, ci_upper)[1, ] / frob_ci_upper^2,
+  pve_ci_upper = pmin(mapply(get_signal_squared_ci, ci_lower, ci_upper)[2, ] / frob_ci_lower^2, 1),
   pve_hat = mle^2 / frob2_hat,
   pve_naive = val_k / val_sum
 )
@@ -287,8 +287,8 @@ results_df[, 2:length(header)] <- sapply(results_df[, 2:length(header)], as.nume
 head(results_df)
 
 plot_df <- results_df %>% mutate(
-  pve_ci_lower = mapply(get_pve_ci, ci_lower, ci_upper)[1, ] / frob_ci_upper^2,
-  pve_ci_upper = pmin(mapply(get_pve_ci, ci_lower, ci_upper)[2, ] / frob_ci_lower^2, 1),
+  pve_ci_lower = mapply(get_signal_squared_ci, ci_lower, ci_upper)[1, ] / frob_ci_upper^2,
+  pve_ci_upper = pmin(mapply(get_signal_squared_ci, ci_lower, ci_upper)[2, ] / frob_ci_lower^2, 1),
   pve_mle = pmin(mle^2 / frob2_hat, 1),
   pve_naive = val_k / val_sum,
   int_width = ub - lb,

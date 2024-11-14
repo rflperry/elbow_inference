@@ -76,7 +76,7 @@ for (k in seq(p)) {
     ci <- conf_interval_solver(
       choi_test_pvalue, vals, k, n, p, sigma=sigma, alpha=alpha, eigen=TRUE
     )
-    pve_ci <- get_pve_ci(ci[1], ci[2], vals[k], sum(vals))
+    pve_ci <- get_signal_squared_ci(ci[1], ci[2], vals[k], sum(vals))
     mle <- NaN
     try({
       mle <- get_mle(
@@ -93,7 +93,7 @@ for (k in seq(p)) {
     ci <- conf_interval_solver(
       si_test_pvalue, vals, k, n, p, sigma=sigma, alpha=alpha, bounds=bounds, eigen=TRUE
     )
-    pve_ci <- get_pve_ci(ci[1], ci[2], vals[k], sum(vals))
+    pve_ci <- get_signal_squared_ci(ci[1], ci[2], vals[k], sum(vals))
     
     mle <- NaN
     try({
