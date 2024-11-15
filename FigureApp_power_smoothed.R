@@ -59,7 +59,7 @@ results_df <- results_df %>%
     ),
     precision = 1 / sigma^2,
     reject_null = as.numeric((p_value <= alpha)),
-    signal_normalized = signal / val_sum,
+    signal_normalized = signal / sigma,
     pve = signal^2 / frob_norm^2
   ) %>% subset(
     method != "Choi et al. (2017) [Bf.]"
