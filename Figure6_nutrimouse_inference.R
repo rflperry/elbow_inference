@@ -103,7 +103,7 @@ g <- ggplot(
   scale_x_continuous(breaks = pretty_breaks()) +
   labs(
     x = TeX(r"( Index $k$ )"),
-    y = TeX(r"( $\widehat{PVE}_k(x)$ )"),
+    y = TeX(r"( $\widehat{PVE}_k$ )"),
   ) +
   theme_bw() +
   scale_y_continuous(limits = c(0, NA))
@@ -160,7 +160,7 @@ results_df[, 2:length(header)] <- sapply(results_df[, 2:length(header)], as.nume
 head(results_df)
 
 theme_update(text = element_text(size = 10, family = "Times"))
-labels <- c(unname(TeX(r"( Selective $PVE_k(x)$ )")), unname(TeX(r"( Naive $\widehat{PVE}_k(x)$ )")))
+labels <- c(unname(TeX(r"( Selective $PVE_k$ )")), unname(TeX(r"( Naive $\widehat{PVE}_k$ )")))
 
 plot_df <- results_df %>% mutate(
   pve_ci_lower = mapply(get_signal_squared_ci, ci_lower, ci_upper)[1, ] / frob_ci_upper^2,
@@ -312,7 +312,7 @@ g <- ggplot(
   ) +
   scale_color_manual(
     values = c("Non-selective" = hue_pal()(3)[2], "Selective" = hue_pal()(3)[3]),
-    labels = c(unname(TeX(r"( Non-selective $PVE_k(x)$ )")), unname(TeX(r"( Selective $PVE_k(x)$ )")))
+    labels = c(unname(TeX(r"( Non-selective $PVE_k$ )")), unname(TeX(r"( Selective $PVE_k$ )")))
   ) +
   scale_x_continuous(breaks = pretty_breaks()) +
   theme_bw() +
@@ -334,13 +334,15 @@ g <- ggplot(
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.5, position = position_dodge(0.6)) +
   labs(
     x = TeX(r"( Index $k$ )"),
-    y = TeX(r"( $u_k\{x^{(1)}\}^T \Theta  v_k\{x^{(1)}\}$ )"),
+    # y = TeX(r"( $u_k\{x^{(1)}\}^T \Theta  v_k\{x^{(1)}\}$ )"),
+    y = "Signal",
     col = "",
     linetype = "",
   ) +
   scale_color_manual(
     values = c("Non-selective" = hue_pal()(3)[2], "Selective" = hue_pal()(3)[3]),
-    labels = c(unname(TeX(r"( Non-selective $u_k\{x^{(1)}\}^T \Theta  v_k\{x^{(1)}\}$ )")), unname(TeX(r"( Selective $u_k\{x^{(1)}\}^T \Theta  v_k\{x^{(1)}\}$ )")))
+    # labels = c("unname(TeX(r"( Non-selective $u_k\{x^{(1)}\}^T \Theta  v_k\{x^{(1)}\}$ )"))", unname(TeX(r"( Selective $u_k\{x^{(1)}\}^T \Theta  v_k\{x^{(1)}\}$ )")))
+    labels = c("None-selective", "Selective")
   ) +
   scale_x_continuous(breaks = pretty_breaks()) +
   theme_bw() +
