@@ -311,8 +311,8 @@ g <- ggplot(
     linetype = "",
   ) +
   scale_color_manual(
-    values = c("Selective" = hue_pal()(3)[3], "Non-selective" = hue_pal()(3)[2]),
-    labels = c(unname(TeX(r"( Selective $PVE_k(x)$ )")), unname(TeX(r"( Non-selective $PVE_k(x)$ )")))
+    values = c("Non-selective" = hue_pal()(3)[2], "Selective" = hue_pal()(3)[3]),
+    labels = c(unname(TeX(r"( Non-selective $PVE_k(x)$ )")), unname(TeX(r"( Selective $PVE_k(x)$ )")))
   ) +
   scale_x_continuous(breaks = pretty_breaks()) +
   theme_bw() +

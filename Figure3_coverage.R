@@ -93,8 +93,8 @@ g <- ggplot(plot_df, aes(x = tested_k, y = coverage, color=method, lty=method)) 
     linetype = "",
   ) +
   scale_color_manual(
-    values = c("Unselective" = hue_pal()(3)[1], "Selective" = hue_pal()(3)[3]),
-    labels = c("Non-selective", "Selective")
+    values = c("Selective" = hue_pal()(3)[3], "Unselective" = hue_pal()(3)[1]),
+    labels = c("Selective", "Non-selective")
     ) +
   scale_linetype_manual(
     values = c("Selective" = "solid", "Unselective" = "dashed"),
