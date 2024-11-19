@@ -23,8 +23,8 @@ print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
 
 args <- list()
-args$input_file <- "data/sim_conf_ints_alpha=0.1_c=1_m=1_method=zg_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData"
-args$sigma <- 0.2
+args$input_file <- "data/sim_conf_ints_alpha=0.1_c=1_m=1_method=elbow_n=50_p=10_rank=5_reps=2000_signal_alpha_frac=0.75.RData"
+args$sigma <- 0.5
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 	Plot the figure
@@ -67,7 +67,7 @@ plot_df <- results_df %>%
     pve_ci_width = pve_ci_upper - pve_ci_lower,
   ) %>% 
   group_by(
-    method, sigma, precision, tested_k
+    method, tested_k
   ) %>%
   summarise(
     mean_pve_ci_lower = median(pve_ci_lower, na.rm=TRUE),

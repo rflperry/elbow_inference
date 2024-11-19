@@ -24,6 +24,9 @@ parser$add_argument("--sigmas",
 print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
 
+args <- list()
+args$input_file <- "data/sim_conf_ints_alpha=0.1_c=1_m=1_method=elbow_n=50_p=10_rank=5_reps=1000_signal_alpha_frac=0.75.RData"
+
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 	Plot the figure
@@ -121,16 +124,16 @@ g <- ggplot(plot_df, aes(x = tested_k, y = mean_pve)) +
   scale_color_manual(
     values = c("Estimand" = hue_pal()(3)[2], "Selective" = hue_pal()(3)[3], "Naive" = "black"),
     labels = c(
-      unname(TeX(r"( True $PVE_k(X)$ )")),
-      unname(TeX(r"( Selective $PVE_k(X)$ )")),
-      unname(TeX(r"( Naive $\widehat{PVE}_k(X)$ )")))
+      unname(TeX(r"( True $PVE_k$ )")),
+      unname(TeX(r"( Selective $PVE_k$ )")),
+      unname(TeX(r"( Naive $\widehat{PVE}_k$ )")))
     ) +
   scale_shape_manual(
     values = c("Estimand" = 4, "Selective" = 17, "Naive" = 16),
     labels = c(
-      unname(TeX(r"( True $PVE_k(X)$ )")),
-      unname(TeX(r"( Selective $PVE_k(X)$ )")),
-      unname(TeX(r"( Naive $\widehat{PVE}_k(X)$ )")))
+      unname(TeX(r"( True $PVE_k$ )")),
+      unname(TeX(r"( Selective $PVE_k$ )")),
+      unname(TeX(r"( Naive $\widehat{PVE}_k$ )")))
     ) +
   theme_bw() +
   theme(

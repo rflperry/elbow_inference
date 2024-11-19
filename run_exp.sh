@@ -13,19 +13,19 @@ timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 #     2>&1
 
 # Elbow rule: coverage
-# fname="simulate_confidence_intervals"
-# log_file="logs/$fname"_"$timestamp.log"
-# Rscript "$fname.R" > "$log_file" \
-#     --method elbow \
-#     --reps 10000 \
-#     --sigmas 0.5 \
-#     2>&1
+fname="simulate_confidence_intervals"
+log_file="logs/$fname"_"$timestamp.log"
+Rscript "$fname.R" > "$log_file" \
+    --method elbow \
+    --reps 2000 \
+    --sigmas 0.5 \
+    2>&1
 
 # Elbow rule: CI widths
 # fname="simulate_confidence_intervals"
 # log_file="logs/$fname"_"$timestamp.log"
 # Rscript "$fname.R" > "$log_file" \
-#     --sigmas 0.15 0.5 \
+#     --sigmas 0.15 0.25 \
 #     --method elbow \
 #     --reps 1000 \
 #     2>&1

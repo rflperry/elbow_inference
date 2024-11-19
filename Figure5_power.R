@@ -25,8 +25,8 @@ parser$add_argument("--sigmas",
 print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
 
-# args <- list()
-# args$input_file <- "data/sim_hypo_tests_alpha=0.1_m=1_method=zg_n=50_p=10_rank=5_reps=1000.RData"
+args <- list()
+args$input_file <- "data/sim_hypo_tests_alpha=0.1_m=1_method=elbow_n=50_p=10_rank=5_reps=1000.RData"
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
