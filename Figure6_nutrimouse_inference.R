@@ -334,13 +334,13 @@ g <- ggplot(
   geom_errorbar(aes(ymin = ci_lower, ymax = ci_upper), width = 0.5, position = position_dodge(0.6)) +
   labs(
     x = TeX(r"( Index $k$ )"),
-    y = TeX(r"( $u_k\{x\}^T \Theta  v_k\{x\}$ )"),
+    y = TeX(r"( $u_k\{x^{(1)}\}^T \Theta  v_k\{x^{(1)}\}$ )"),
     col = "",
     linetype = "",
   ) +
   scale_color_manual(
-    values = c("Selective" = hue_pal()(3)[3], "Non-selective" = hue_pal()(3)[2]),
-    labels = c(unname(TeX(r"( Selective $u_k\{x\}^T \Theta  v_k\{x\}$ )")), unname(TeX(r"( Non-selective $u_k\{x\}^T \Theta  v_k\{x\}$ )")))
+    values = c("Non-selective" = hue_pal()(3)[2], "Selective" = hue_pal()(3)[3]),
+    labels = c(unname(TeX(r"( Non-selective $u_k\{x^{(1)}\}^T \Theta  v_k\{x^{(1)}\}$ )")), unname(TeX(r"( Selective $u_k\{x^{(1)}\}^T \Theta  v_k\{x^{(1)}\}$ )")))
   ) +
   scale_x_continuous(breaks = pretty_breaks()) +
   theme_bw() +
