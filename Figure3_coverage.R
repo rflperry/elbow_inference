@@ -23,8 +23,8 @@ print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
 
 args <- list()
-args$input_file <- "data/sim_conf_ints_alpha=0.1_c=1_m=1_method=elbow_n=50_p=10_rank=5_reps=2000_signal_alpha_frac=0.75.RData"
-args$sigma <- 0.5
+args$input_file <- "data/sim_conf_ints_alpha=0.1_c=1_m=1_method=zg_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData"
+args$sigma <- 0.2
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 	Plot the figure
@@ -87,7 +87,7 @@ g <- ggplot(plot_df, aes(x = tested_k, y = coverage, color=method, lty=method)) 
   geom_errorbar(aes(ymin=coverage-1.96*se, ymax=coverage+1.96*se), width=.1) +
   geom_hline(yintercept=0.9, linetype="dashed",color = "gray", size=0.5) +
   labs(
-    x = TeX(r"( Index $k \leq r(s\{X\})$ of target $PVE_k(X)$ )"),
+    x = TeX(r"( Index $k$ )"),
     y = "Coverage",
     col = "",
     linetype = "",
