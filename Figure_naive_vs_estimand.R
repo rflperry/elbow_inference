@@ -36,6 +36,7 @@ args <- parser$parse_args()
 #
 
 eigen <- TRUE
+selection <- TRUE
 
 # sigmas <- c(0.1, 0.15, 0.2, 0.3, 0.4, 0.7, 1)
 selection_rule <- "zg" # options include "zg", "elbow"
@@ -82,8 +83,16 @@ for (rep in 1:reps) {
 
       frob_norm <- sqrt(sum(sim$mean_mat^2))
 
+      if (selection & selection_rule == "zg") {
+        r <- select_r_zg(vals)
+      } else if (selection & selection_rule == "elbow") {
+        r <- select_r_elbow(vals)[1]
+      } else {
+        r <- p
+      }
+
       # Perform selection
-      for (k in seq(1, p)) {
+      for (k in seq(1, r)) {
         # Base quantities to save
         tr_mean <- (t(duv$u[, k]) %*% sim$mean_mat %*% duv$v[, k])[1]
 
@@ -119,7 +128,7 @@ print(nrow(results_df[complete.cases(results_df), ]) / nrow(results_df))
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-save_fname <- "figures/Figure_m=1_n=50_p=10_rank=5_reps=1000-naive_vs_estimand.png"
+save_fname <- paste0("figures/Figure_m=1_n=50_p=10_rank=5_reps=1000_selection=", selection, "-naive_vs_estimand.png")
 
 theme_update(text = element_text(size = 10, family = "Times"))
 
