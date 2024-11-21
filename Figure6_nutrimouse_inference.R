@@ -221,7 +221,7 @@ for (nl in c(0, 1, 2, 3, 4, 5, 6, 7, 8)) {
   data_noised <- data + nl * noise
 
   data_noised1 <- data_noised + sqrt(1 + nl^2) * dt_noise * c
-  data_noised2 <- data_noised + sqrt(1 + nl^2) * dt_noise / c
+  data_noised2 <- data_noised - sqrt(1 + nl^2) * dt_noise / c
 
   sigma1 <- sigma * sqrt(1 + nl^2) * sqrt(1 + c^2)
   sigma2 <- sigma * sqrt(1 + nl^2) * sqrt(1 + 1 / c^2)

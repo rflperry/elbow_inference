@@ -36,7 +36,7 @@ args <- parser$parse_args()
 #
 
 eigen <- TRUE
-selection <- TRUE
+selection <- FALSE
 
 # sigmas <- c(0.1, 0.15, 0.2, 0.3, 0.4, 0.7, 1)
 selection_rule <- "zg" # options include "zg", "elbow"
@@ -145,7 +145,9 @@ plot_df <- results_df %>%
     sigma, precision, tested_k
   ) %>%
   summarise(
-    median_log_pve_ratio = median(log(pve_naive / pve), na.rm = TRUE)
+    median_log_pve_ratio = median(log(pve_naive / pve), na.rm = TRUE),
+    median_pve = median(pve, na.rm = TRUE),
+    median_pve_naive = median(pve_naive, na.rm = TRUE)
   )
 head(plot_df)
 
