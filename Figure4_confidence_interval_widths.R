@@ -17,7 +17,7 @@ source("./scripts/functions/estimation.R")
 ## -----------------------------------------
 # args <- list()
 # args$input_file <- "data/sim_conf_ints_alpha=0.1_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=1000_signal_alpha_frac=0.75.RData"
-# args$sigmas <- c(0.1, 0.2)
+# args$sigmas <- c(0.05, 0.1, 0.2, 0.25)
 
 parser <- ArgumentParser()
 parser$add_argument("input_file", nargs=1, help="File to be displayed")
@@ -74,8 +74,7 @@ plot_df <- results_df %>%
     pve_covered = as.numeric((pve_ci_lower <= pve) & (pve <= pve_ci_upper)),
     pve_ci_width = pve_ci_upper - pve_ci_lower,
   ) %>% subset(
-    method == "Selective" &
-    sigma %in% args$sigmas
+    method == "Selective" & sigma %in% args$sigmas
   ) 
 
 # plot_rank <- plot_df %>%
@@ -160,5 +159,5 @@ g <- ggplot(plot_df, aes(x = tested_k, y = mean_pve)) +
       sigma = function(x) paste0("sigma = " , x))
     )
 show(g)
-ggsave(fname, width = 5.5, height = 2, unit = "in")
+ggsave(fname, width = 5.5, height = 4, unit = "in")
 
