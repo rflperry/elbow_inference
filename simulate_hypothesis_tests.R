@@ -101,8 +101,8 @@ for (rep in 1:reps) {
         base_results <- c(rep, n, p, sigma, m, rank, r, k, tr_mean, frob_norm, vals[k], sum(vals), sqrt(vals[1]), noise_svals[1], sum(noise_svals^2))
 
         # Choi p-value
-        choi_pvalue <- choi_test_pvalue(vals, k = k, n = n, p = p, sigma = sigma, eigen = eigen)
-        results <- c(results, "Choi", base_results, choi_pvalue)
+        # choi_pvalue <- choi_test_pvalue(vals, k = k, n = n, p = p, sigma = sigma, eigen = eigen)
+        # results <- c(results, "Choi", base_results, choi_pvalue)
 
         # Acquire bounds for selective p-value
         if (selection_rule == "zg") {

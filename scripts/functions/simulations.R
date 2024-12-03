@@ -13,7 +13,13 @@ simulate_matrix <- function (n, p, sigma, rank, m, degree=1, eigen=TRUE, offset=
   duv <- svd(UV)
   U <- duv$u
   V <- duv$v
-  vals <- c(rev(seq(1:(rank))), rep(0, p-rank))^degree * m * (n*p)^(1/4) + offset
+  # vals <- c(rev(seq(1:(rank))), rep(0, p-rank))^degree * m * (n*p)^(1/4) + offset
+  if ( rank < min(n, p)) {
+    vals <- c(seq(0, 5, length.out=rank+1), rep(0, p-rank-1))^degree * m * (50*10)^(1/4) + offset
+  } else {
+    vals <- (seq(0, 5, length.out=rank+1)[2:(rank+1)])^degree * m * (50*10)^(1/4) + offset
+  }
+  
   if (eigen) {
     vals <- sqrt(vals)
   }

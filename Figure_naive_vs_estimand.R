@@ -14,9 +14,9 @@ source("./scripts/functions/simulations.R")
 ## Load any command line arguments
 ## -----------------------------------------
 parser <- ArgumentParser()
-parser$add_argument("-n", type = "integer", default = 50)
-parser$add_argument("-p", type = "integer", default = 10)
-parser$add_argument("--rank", type = "integer", default = 5)
+parser$add_argument("-n", type = "integer", default = 100)
+parser$add_argument("-p", type = "integer", default = 50)
+parser$add_argument("--rank", type = "integer", default = 10)
 parser$add_argument("-m", type = "integer", default = 1)
 parser$add_argument("--reps", type = "integer", default = 1000)
 parser$add_argument("--alpha", type = "double", default = 0.1)
@@ -36,7 +36,7 @@ args <- parser$parse_args()
 #
 
 eigen <- TRUE
-selection <- FALSE
+selection <- TRUE
 
 # sigmas <- c(0.1, 0.15, 0.2, 0.3, 0.4, 0.7, 1)
 selection_rule <- "zg" # options include "zg", "elbow"
@@ -128,7 +128,7 @@ print(nrow(results_df[complete.cases(results_df), ]) / nrow(results_df))
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-save_fname <- paste0("figures/Figure_m=1_n=50_p=10_rank=5_reps=1000_selection=", selection, "-naive_vs_estimand.png")
+save_fname <- paste0("figures/Figure_m=1_n=", n, "_p=", p, "_rank=", rank, "_reps=1000_selection=", selection, "-naive_vs_estimand.png")
 
 theme_update(text = element_text(size = 10, family = "Times"))
 
@@ -136,6 +136,7 @@ results_df <- results_df %>%
   # drop_na() %>%
   mutate(
     pve = pmin((signal / frob_norm)^2, 1),
+    signal_normalized = signal / sigma,
     pve_naive = val_k / val_sum,
     precision = 1 / sigma^2,  )
 head(results_df)
@@ -165,5 +166,27 @@ g <- ggplot(
     theme_bw() +
     scale_color_viridis_d(option = "D", direction = 1) +
     scale_x_discrete(limits = factor(1:10))
+show(g)
+ggsave(save_fname, width = 5.5, height = 2.2, unit = "in")
+
+results_df %>%
+  group_by(sigma) %>%
+  summarise(detection = mean(selection_r == rank))
+
+save_fname <- paste0("figures/Figure_m=1_n=", n, "_p=", p, "_rank=", rank, "_reps=1000_selection=", selection, "-naive_vs_estimand_scatter.png")
+g <- ggplot(
+  results_df,
+  aes(x = pve, y = pve_naive, col = as.factor(sigma)),
+) +
+    geom_point(size=0.1) +
+    geom_abline(slope = 1, linetype = "dashed", color = "black", linewidth = 1) +
+    labs(
+        x = TeX(r"( $PVE_k\{X\}$ )"),
+        y = TeX(r"( $\widehat{PVE}_k\{X\}$ )"),
+        col = unname(TeX(r"( $\sigma$ )"))
+    ) +
+    theme_bw() +
+    scale_color_viridis_d(option = "D", direction = 1) +
+    guides(col = guide_legend(override.aes = list(size = 1)))
 show(g)
 ggsave(save_fname, width = 5.5, height = 2.2, unit = "in")

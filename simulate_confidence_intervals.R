@@ -29,6 +29,8 @@ parser$add_argument("--sigmas",
   default = c(0.1, 0.2)
 )
 parser$add_argument("--c", type = "double", default = sqrt(1))
+parser$add_argument("--choi", type = "logical", default = FALSE)
+parser$add_argument("--mle", type = "logical", default = TRUE)
 parser$add_argument("--signal_alpha_frac", type = "double", default = 0.75)
 print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
@@ -110,34 +112,32 @@ for (rep in 1:reps) {
         # Compute intervals
         base_results <- c(rep, n, p, sigma, c, m, rank, r, k, tr_mean, frob_norm, vals[k], sum(vals), X2_frob_norm, frob_ci, frob_mle, frob2_hat)
 
-        # Choi p-value
-        ci <- conf_interval_solver(
-          choi_test_pvalue, vals, k, n, p,
-          sigma = sigma1, alpha = alpha * signal_alpha_frac, eigen = eigen
-        )
-        # ci[1] <- ci[1] / frob_ci[2]
-        # ci[2] <- ci[2] / frob_ci[1]
-
-        choi_mle <- NaN
-        try({
-          choi_mle <- get_mle_signal(
-            vals, k, n, p, sigma1,
-            eigen = eigen
+        if (choi) {
+          # Choi p-value
+          ci <- conf_interval_solver(
+            choi_test_pvalue, vals, k, n, p,
+            sigma = sigma1, alpha = alpha * signal_alpha_frac, eigen = eigen
           )
-        })
+          # ci[1] <- ci[1] / frob_ci[2]
+          # ci[2] <- ci[2] / frob_ci[1]
 
-        choi_median <- get_median_signal(
-          choi_test_pvalue, vals, k, n, p,
-          sigma = sigma1, eigen = eigen
-        )
+          choi_mle <- NaN
+          if (mle) {
+            try({
+              choi_mle <- get_mle_signal(
+                vals, k, n, p, sigma1,
+                eigen = eigen
+              )
+            })
+          }
 
-        results <- c(results, "Choi", base_results, ci, choi_mle, choi_median)
+          # choi_median <- get_median_signal(
+          #   choi_test_pvalue, vals, k, n, p,
+          #   sigma = sigma1, eigen = eigen
+          # )
 
-        # Choi p-value, w/ Bonferroni correction
-        # ci <- conf_interval_solver(
-        #   choi_test_pvalue, vals, k, n, p, sigma=sigma, alpha=alpha / (p-2), eigen=eigen
-        # )
-        # results <- c(results, 'Choi (Bf.)', base_results, ci, choi_mle, choi_median, mean(ci))
+          results <- c(results, "Choi", base_results, ci, choi_mle)
+        }
 
         # Selective inference p-value (R >= k)
         # Acquire bounds
@@ -148,22 +148,24 @@ for (rep in 1:reps) {
         }
 
         si_mle <- NaN
-        try({
-          si_mle <- get_mle_signal(
-            vals, k, n, p, sigma1,
-            bounds = bounds, eigen = eigen
-          )
-        })
-        si_median <- get_median_signal(
-          si_test_pvalue, vals, k, n, p,
-          sigma = sigma1, bounds = bounds, eigen = eigen
-        )
+        if (mle) {
+          try({
+            si_mle <- get_mle_signal(
+              vals, k, n, p, sigma1,
+              bounds = bounds, eigen = eigen
+            )
+          })
+        }
+        # si_median <- get_median_signal(
+        #   si_test_pvalue, vals, k, n, p,
+        #   sigma = sigma1, bounds = bounds, eigen = eigen
+        # )
 
         ci <- conf_interval_solver(
           si_test_pvalue, vals, k, n, p,
           sigma = sigma1, alpha = alpha * signal_alpha_frac, bounds = bounds, eigen = eigen
         )
-        results <- c(results, "Selective inference", base_results, ci, si_mle, si_median)
+        results <- c(results, "Selective inference", base_results, ci, si_mle)
       }
     })
   }
@@ -178,7 +180,7 @@ for (rep in 1:reps) {
 header <- c(
   "method", "rep", "n", "p", "sigma", "thin_c", "signal_strength",
   "rank", "selection_r", "tested_k", "signal", "frob_norm", "val_k", "val_sum",
-  "X2_frob_norm", "frob_ci_lower", "frob_ci_upper", "frob_mle", "frob2_hat", "ci_lower", "ci_upper", "mle", "median"
+  "X2_frob_norm", "frob_ci_lower", "frob_ci_upper", "frob_mle", "frob2_hat", "ci_lower", "ci_upper", "mle"
 )
 
 results_df <- data.frame(

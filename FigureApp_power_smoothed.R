@@ -26,8 +26,8 @@ parser$add_argument("--sigmas",
 print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
 
-args <- list()
-args$input_file <- "data/sim_hypo_tests_alpha=0.1_m=1_method=zg_n=50_p=10_rank=5_reps=1000.RData"
+# args <- list()
+# args$input_file <- "data/sim_hypo_tests_alpha=0.1_m=1_method=zg_n=50_p=10_rank=5_reps=1000.RData"
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -59,7 +59,7 @@ results_df <- results_df %>%
     ),
     precision = 1 / sigma^2,
     reject_null = as.numeric((p_value <= alpha)),
-    signal_normalized = signal,
+    signal_normalized = signal / sigma,
     pve = signal^2 / frob_norm^2
   ) %>% subset(
     method != "Choi et al. (2017) [Bf.]"
@@ -68,8 +68,10 @@ head(results_df)
 
 g <- ggplot(
   results_df %>% subset(
-    method == "Selective" &
-    rank == selection_r
+    method == "Selective"
+    # & tested_k == 1
+    # & rank == selection_r
+    & tested_k <= 6
   ),
   aes(x = signal_normalized, y = reject_null, color = as.factor(tested_k))
 ) +
@@ -83,9 +85,10 @@ g <- ggplot(
   scale_color_viridis(discrete = TRUE, option = "D") +
   scale_fill_viridis(discrete = TRUE) +
   labs(
-    x = "Signal",
-    y = "Power",
-    col = "Tested index k"
+    # x = "Signal",
+    x = TeX(r"( Normalized signal $( u_k^T\{X\} \Theta\,\,v_k\{X\} / \sigma\,)$ )"),
+    y = "Selective power",
+    col = "Tested\nindex k"
   ) +
   theme_bw() +
   coord_cartesian(ylim = c(0.04, NA)) +
@@ -102,6 +105,8 @@ g <- ggplot(
     legend.just = c("right", "top"),
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 8)
-  )
-show(g)
-ggsave(power_fname, width = 6, height = 4, unit = "in")
+  ) +
+  guides(color = guide_legend(ncol = 1))
+  # facet_wrap(~ tested_k, scales = "free_y")
+# show(g)
+ggsave(power_fname, width = 6, height = 2.5, unit = "in")

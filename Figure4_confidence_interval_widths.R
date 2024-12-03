@@ -15,6 +15,10 @@ source("./scripts/functions/estimation.R")
 ## -----------------------------------------
 ## Load any command line arguments
 ## -----------------------------------------
+# args <- list()
+# args$input_file <- "data/sim_conf_ints_alpha=0.1_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=1000_signal_alpha_frac=0.75.RData"
+# args$sigmas <- c(0.1, 0.2)
+
 parser <- ArgumentParser()
 parser$add_argument("input_file", nargs=1, help="File to be displayed")
 parser$add_argument("--sigmas", 
@@ -23,9 +27,6 @@ parser$add_argument("--sigmas",
                     default = c(0.1, 0.2))
 print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
-
-args <- list()
-args$input_file <- "data/sim_conf_ints_alpha=0.1_c=1_m=1_method=elbow_n=50_p=10_rank=5_reps=1000_signal_alpha_frac=0.75.RData"
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -43,9 +44,6 @@ fname <- paste0("figures/Figure4_", sub("\\.RData$", ".png", basename(args$input
 # }
 
 theme_update(text = element_text(size=10, family="Times"))
-color_map <- c("Choi et al. (2017)" = hue_pal()(3)[1], "Choi et al. (2017) [Bf]" = hue_pal()(3)[2], "Selective Inference" = hue_pal()(3)[3])
-scale_map <- c("Choi et al. (2017)" = 16, "Choi et al. (2017) [Bf]" = 17, "Selective Inference" = 15)
-linetype_map <- c( "Selective Inference" = "solid", "Choi et al. (2017)" = "dashed")
 
 load(args$input_file)
 
@@ -76,9 +74,22 @@ plot_df <- results_df %>%
     pve_covered = as.numeric((pve_ci_lower <= pve) & (pve <= pve_ci_upper)),
     pve_ci_width = pve_ci_upper - pve_ci_lower,
   ) %>% subset(
-    method == "Selective"
-  ) %>%
-  subset(selection_r == rank) %>%
+    method == "Selective" &
+    sigma %in% args$sigmas
+  ) 
+
+# plot_rank <- plot_df %>%
+#   subset(sigma == min(plot_df$sigma)) %>%
+#   group_by(selection_r) %>%
+#   summarise(n = n()) %>%
+#   slice_max(n, n=1) %>%
+#   pull(selection_r)
+# print(plot_rank)
+
+plot_df <- plot_df %>%
+  subset(
+    tested_k <= 6
+    ) %>%
   group_by(
     method, sigma, precision, tested_k
   ) %>%
@@ -89,15 +100,8 @@ plot_df <- results_df %>%
     mean_pve_ci_upper = summary_func(pve_ci_upper, na.rm=TRUE),
     coverage = mean(pve_covered, na.rm=TRUE),
     mean_pve_width = summary_func(pve_ci_width, na.rm=TRUE),
-    # pve_mle_error = mean((pve_mle - pve)),
-    # pve_median_error = mean((pve_median - pve)),
     mean_pve_mle = summary_func(pve_mle, na.rm=TRUE),
     mean_pve_hat = summary_func(pve_hat, na.rm=TRUE),
-    # mean_pve_median = median(pve_median, na.rm=TRUE),
-    # # midpoint_error = mean((midpoint - true_pivot)^2)
-    # mle_mse = mean((pve_mle -pve)^2),
-    # median_mse = mean((pve_median - pve)^2),
-    # # midpoint_ = mean((midpoint - true_pivot)^2)
   )
 head(plot_df)
 
@@ -149,7 +153,12 @@ g <- ggplot(plot_df, aes(x = tested_k, y = mean_pve)) +
     legend.title = element_text(size = 10), 
     legend.text = element_text(size = 8)
   ) +
-  facet_wrap(~ sigma, scales="free_y")
+  facet_wrap(
+    ~ sigma,
+    scales="free_y",
+    labeller = labeller(
+      sigma = function(x) paste0("sigma = " , x))
+    )
 show(g)
 ggsave(fname, width = 5.5, height = 2, unit = "in")
 

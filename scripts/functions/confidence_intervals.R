@@ -95,23 +95,16 @@ get_signal_squared_ci <- function(ci_lower, ci_upper) { # , val_k, val_sum) {
     return(c(NA, NA))
   }
 
-  if ((ci_lower <= 0) & (ci_upper >= 0)) {
+  if ((ci_lower <= 0) && (ci_upper >= 0)) {
     sq_ci_lower <- 0
   } else {
     sq_ci_lower <- min(ci_lower^2, ci_upper^2)
   }
   sq_ci_upper <- max(ci_lower^2, ci_upper^2)
-  # sq_ci_lower <- if_else(
-  #   sign(ci_lower) == sign(ci_upper),
-  #   pmin( ci_lower^2, ci_upper^2 ), 0)
-  # sq_ci_upper <- pmax( ci_lower^2, ci_upper^2 )
-  # estimator_ci_lower <- sq_ci_lower / ( val_sum - val_k + sq_ci_lower)
-  # if (sq_ci_upper == Inf | sq_ci_lower == Inf) {
-  #   estimator_ci_upper <- 1
-  # } else {
-  #   estimator_ci_upper <- sq_ci_upper / ( val_sum - val_k + sq_ci_upper)
-  # }
 
+  if (sq_ci_lower > sq_ci_upper) {
+    stop("sq_ci_lower cannot be greater than sq_ci_upper.")
+  }
 
   return(c(sq_ci_lower, sq_ci_upper))
 }
@@ -131,6 +124,10 @@ get_nc_chsq_ci <- function(frob_hat, df, alpha) {
     },
     interval = c(0, df * 100)
   )$root
+
+  if (ci_lb > ci_ub) {
+    stop("ci_lb cannot be greater than ci_ub.")
+  }
 
   return(c(ci_lb, ci_ub))
 }
