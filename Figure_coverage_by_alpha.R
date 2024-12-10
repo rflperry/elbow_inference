@@ -104,7 +104,7 @@ g <- ggplot(
     )
 ) +
     geom_bar(stat = "identity", position = position_dodge()) +
-    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "black") +
+    # geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "black") +
     geom_errorbar(width = 0.18, position = position_dodge()) +
     labs(
         x = TeX(r"( Coverage level $(1 - \,\alpha\,)$ )"),
@@ -134,6 +134,15 @@ g <- ggplot(
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 8)
     )
+
+for (alpha in unique(plot_df$alpha)) {
+    g <- g + 
+        geom_segment(
+            aes(x = 1 - alpha - 0.1, xend = 1 - alpha + 0.1, y = alpha, yend = alpha),
+            linetype = "dashed", color = "black"
+        )
+}
+
 show(g)
 ggsave(fname, width = 6, height = 2, unit = "in")
 
