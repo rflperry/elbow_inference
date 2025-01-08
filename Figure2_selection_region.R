@@ -46,9 +46,10 @@ g <- ggplot(
   geom_point(aes(x = k, y = vals[k]), color='chartreuse3', size=2) +
   geom_segment(aes(x = r1, y = vals[r1], xend = r1-1, yend = vals[r1-1]), color='chartreuse3', linetype='dashed') +
   geom_segment(aes(x = r1, y = vals[r1], xend = r1+1, yend = vals[r1+1]), color='chartreuse3', linetype='dashed') +
-  theme_bw()
+  theme_bw() +
+  labs(y = "Squared singular values")
 # print(g)
-ggsave(paste0('./figures_FINAL/Figure2-elbow-scree_plot-case2-true.png'), width = 2, height = 2, unit = "in")
+ggsave(paste0('./figures/Figure2-elbow-scree_plot-case2-true.png'), width = 2, height = 2, unit = "in")
 
 # lower
 g <- ggplot(
@@ -65,9 +66,10 @@ g <- ggplot(
   geom_segment(aes(x = k, y = bounds[1], xend = k, yend = bounds[2]), color='grey', alpha=1) +
   geom_segment(aes(x = k-0.5, y = bounds[1], xend = k+0.5, yend = bounds[1]), color='grey', alpha=1) +
   geom_segment(aes(x = k-0.5, y = bounds[2], xend = k+0.5, yend = bounds[2]), color='grey', alpha=1) +
-  theme_bw()
+  theme_bw() +
+  labs(y = "Squared singular values")
 # print(g)
-ggsave(paste0('./figures_FINAL/Figure2-elbow-scree_plot-case2-lower.png'), width = 2, height = 2, unit = "in")
+ggsave(paste0('./figures/Figure2-elbow-scree_plot-case2-lower.png'), width = 2, height = 2, unit = "in")
 
 # upper
 g <- ggplot(
@@ -84,6 +86,7 @@ g <- ggplot(
   geom_segment(aes(x = k, y = bounds[1], xend = k, yend = bounds[2]), color='grey', alpha=1) +
   geom_segment(aes(x = k-0.5, y = bounds[1], xend = k+0.5, yend = bounds[1]), color='grey', alpha=1) +
   geom_segment(aes(x = k-0.5, y = bounds[2], xend = k+0.5, yend = bounds[2]), color='grey', alpha=1) +
-  theme_bw()
+  theme_bw() +
+  labs(y = "Squared singular values")
 # print(g)
-ggsave(paste0('./figures_FINAL/Figure2-elbow-scree_plot-case2-upper.png'), width = 2, height = 2, unit = "in")
+ggsave(paste0('./figures/Figure2-elbow-scree_plot-case2-upper.png'), width = 2, height = 2, unit = "in")
