@@ -34,6 +34,10 @@ r3 <- select_r_elbow(temp_vals3)[1] + 1
 ## Plotting
 vals <- sqrt(vals)
 bounds <- sqrt(bounds)
+t2 <- sqrt(t2)
+t3 <- sqrt(t3)
+temp_vals2 <- sqrt(temp_vals2)
+temp_vals3 <- sqrt(temp_vals3)
 
 # regular
 g <- ggplot(
