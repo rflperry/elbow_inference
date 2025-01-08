@@ -41,8 +41,8 @@ temp_vals3 <- sqrt(temp_vals3)
 
 # regular
 g <- ggplot(
-  data=data.frame(Index=seq(1,10)[-k], Eigenvalue=vals[-k]),
-  aes(x=Index, y=Eigenvalue)) +
+  data=data.frame(Index=seq(1,10)[-k], sval=vals[-k]),
+  aes(x=Index, y=sval)) +
   theme(text=element_text(size=10)) +
   scale_x_continuous(breaks= pretty_breaks()) +
   annotate('rect', xmin=-Inf, xmax=Inf, ymin=vals[k-1], ymax=Inf, alpha=.2, fill='yellow') +
@@ -55,14 +55,14 @@ g <- ggplot(
   geom_segment(aes(x = r1, y = vals[r1], xend = r1-1, yend = vals[r1-1]), color='chartreuse3', linetype='dashed') +
   geom_segment(aes(x = r1, y = vals[r1], xend = r1+1, yend = vals[r1+1]), color='chartreuse3', linetype='dashed') +
   theme_bw() +
-  labs(y = "Squared singular values")
+  labs(y = "Singular value")
 # print(g)
 ggsave(paste0('./figures/Figure2-elbow-scree_plot-case2-true.png'), width = 2, height = 2, unit = "in")
 
 # lower
 g <- ggplot(
-  data=data.frame(Index=seq(1,10)[-k], Eigenvalue=vals[-k]),
-  aes(x=Index, y=Eigenvalue)) +
+  data=data.frame(Index=seq(1,10)[-k], sval=vals[-k]),
+  aes(x=Index, y=sval)) +
   theme(text=element_text(size=10)) +
   scale_x_continuous(breaks= pretty_breaks()) +
   annotate('rect', xmin=-Inf, xmax=Inf, ymin=vals[k-1], ymax=Inf, alpha=.2, fill='yellow') +
@@ -75,14 +75,14 @@ g <- ggplot(
   geom_segment(aes(x = k-0.5, y = bounds[1], xend = k+0.5, yend = bounds[1]), color='grey', alpha=1) +
   geom_segment(aes(x = k-0.5, y = bounds[2], xend = k+0.5, yend = bounds[2]), color='grey', alpha=1) +
   theme_bw() +
-  labs(y = "Squared singular values")
+  labs(y = "Singular value")
 # print(g)
 ggsave(paste0('./figures/Figure2-elbow-scree_plot-case2-lower.png'), width = 2, height = 2, unit = "in")
 
 # upper
 g <- ggplot(
-  data=data.frame(Index=seq(1,10)[-k], Eigenvalue=vals[-k]),
-  aes(x=Index, y=Eigenvalue)) +
+  data=data.frame(Index=seq(1,10)[-k], sval=vals[-k]),
+  aes(x=Index, y=sval)) +
   theme(text=element_text(size=10)) +
   scale_x_continuous(breaks= pretty_breaks()) +
   annotate('rect', xmin=-Inf, xmax=Inf, ymin=vals[k-1], ymax=Inf, alpha=.2, fill='yellow') +
@@ -95,6 +95,6 @@ g <- ggplot(
   geom_segment(aes(x = k-0.5, y = bounds[1], xend = k+0.5, yend = bounds[1]), color='grey', alpha=1) +
   geom_segment(aes(x = k-0.5, y = bounds[2], xend = k+0.5, yend = bounds[2]), color='grey', alpha=1) +
   theme_bw() +
-  labs(y = "Squared singular values")
+  labs(y = "Singular value")
 # print(g)
 ggsave(paste0('./figures/Figure2-elbow-scree_plot-case2-upper.png'), width = 2, height = 2, unit = "in")
