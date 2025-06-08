@@ -138,7 +138,7 @@ g <- ggplot(
 for (alpha in unique(plot_df$alpha)) {
     g <- g + 
         geom_segment(
-            aes(x = 1 - alpha - 0.1, xend = 1 - alpha + 0.1, y = alpha, yend = alpha),
+            aes(x = alpha - 0.1, xend = alpha + 0.1, y = alpha, yend = alpha),
             linetype = "dashed", color = "black"
         )
 }
