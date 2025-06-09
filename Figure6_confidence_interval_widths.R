@@ -87,7 +87,7 @@ plot_df <- results_df %>%
 
 plot_df <- plot_df %>%
   subset(
-    tested_k <= 6
+    tested_k <= 5
     ) %>%
   group_by(
     method, sigma, precision, tested_k
