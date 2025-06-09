@@ -67,12 +67,11 @@ sigma <- sqrt(median(sqrt(vals))^2 / (max(n, p) * qmp(0.5, svr = max(n, p) / min
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-## Uncomment out the following lines, and comment out the readRDS
-##  line to apply the thinning procedure from scratch
-# set.seed(6)
-# noise <- array(rnorm(n * p, sd = sigma), dim = c(n, p))
+set.seed(6)
+noise <- array(rnorm(n * p, sd = sigma), dim = c(n, p))
 # saveRDS(noise, file = "data/nutrimouse_noise_array.rds")
-noise <- readRDS("data/nutrimouse_noise_array.rds")
+# # Uncomment out the line below if set.seed is not working for reproducibility purposes
+# noise <- readRDS("data/nutrimouse_noise_array.rds")
 
 c <- sqrt(1)
 data1 <- data + c * noise
