@@ -83,35 +83,43 @@ for (rep in 1:reps) {
 
       # Estimate sigma if specified
       if (var_est) {
-        #  Transform data instead
-        I <- diag(1, n) # Identity matrix
-        J <- matrix(1 / n, n, n) # Matrix with all elements equal to 1/n
-        C <- I - J # Centering matrix
-        duv <- svd(C)
+        # #  Transform data instead
+        # I <- diag(1, n) # Identity matrix
+        # J <- matrix(1 / n, n, n) # Matrix with all elements equal to 1/n
+        # C <- I - J # Centering matrix
+        # duv <- svd(C)
 
-        H <- duv$u %*% sqrt(diag(duv$d))
-        data <- t(H) %*% as.matrix(sim$obsv_mat)
-        SCALAR <- max(data) / 2 * sqrt(n)
-        data <- data / SCALAR
+        # H <- duv$u %*% sqrt(diag(duv$d))
+        # sim$obsv_mat <- t(H) %*% as.matrix(sim$obsv_mat)
+        # SCALAR <- max(sim$obsv_mat) / 2 * sqrt(n)
+        # sim$obsv_mat <- sim$obsv_mat / SCALAR
 
-        sim$mean_mat <- t(H) %*% as.matrix(sim$mean_mat) / SCALAR
+        # sim$mean_mat <- t(H) %*% as.matrix(sim$mean_mat) / SCALAR
 
-        duv <- svd(data)
-        vals <- duv$d
-
-        sigma_hat <- sqrt(median(sqrt(vals))^2 / (max(n, p) * qmp(0.5, svr = max(n, p) / min(n, p))))
-      } else{
         duv <- svd(sim$obsv_mat)
         vals <- duv$d
-        sigma_hat <- sigma
-      }
+        sigma_hat <- sqrt(median(sqrt(vals))^2 / (max(n, p) * qmp(0.5, svr = max(n, p) / min(n, p))))
 
-      if (eigen) {
-        vals <- duv$d^2
+      } else{
+        # duv <- svd(sim$obsv_mat)
+        # vals <- duv$d
+        sigma_hat <- sigma
       }
 
       sigma1 <- sqrt(sigma_hat^2 * (1 + c^2))
       sigma2 <- sqrt(sigma_hat^2 * (1 + 1 / c^2))
+
+      # Thin
+      W <- array(rnorm(n*p, sd=sigma_hat), dim=c(n, p))
+      sim$obsv_mat1 <- sim$obsv_mat + W * sqrt(1 + c^2)
+      sim$obsv_mat2 <- sim$obsv_mat - W * sqrt(1 + 1/c^2)
+
+      # Estimate svals on thin 1
+      duv <- svd(sim$obsv_mat1)
+      vals <- duv$d
+      if (eigen) {
+        vals <- duv$d^2
+      }
 
       X2_frob_norm <- sqrt(sum(sim$obsv_mat2^2))
       frob2_hat <- X2_frob_norm^2 - n * p * sigma2^2
