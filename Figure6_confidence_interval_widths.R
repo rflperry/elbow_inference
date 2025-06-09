@@ -159,4 +159,4 @@ g <- ggplot(plot_df, aes(x = tested_k, y = mean_pve)) +
       sigma = function(x) paste0("sigma = " , x))
     )
 show(g)
-ggsave(fname, width = 7.5, height = 2.66, unit = "in")
+ggsave(fname, width = 6.5, height = 2.66, unit = "in")
