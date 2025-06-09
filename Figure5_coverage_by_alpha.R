@@ -18,17 +18,29 @@ parser$add_argument("--sigma",
     type = "double",
     default = 0.2
 )
+parser$add_argument("--var_est", action='store_true', default = FALSE)
 print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
 
 args <- list()
-args$input_files <- c(
+if(args.var_est) {
+    args$input_files <- c(
+    "data/sim_conf_ints_alpha=0.1_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
+    "data/sim_conf_ints_alpha=0.3_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
+    "data/sim_conf_ints_alpha=0.5_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
+    "data/sim_conf_ints_alpha=0.7_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
+    "data/sim_conf_ints_alpha=0.9_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData"
+)
+} else {
+    args$input_files <- c(
     "data/sim_conf_ints_alpha=0.1_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
     "data/sim_conf_ints_alpha=0.3_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
     "data/sim_conf_ints_alpha=0.5_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
     "data/sim_conf_ints_alpha=0.7_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
     "data/sim_conf_ints_alpha=0.9_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData"
 )
+}
+
 args$sigma <- 0.1
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -36,7 +48,7 @@ args$sigma <- 0.1
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-fname <- paste0("figures/Figure_coverage_vs_alpha_", sub("\\.RData$", ".png", basename(args$input_files[1])))
+fname <- paste0("figures/Figure5_coverage_vs_alpha_", sub("\\.RData$", ".png", basename(args$input_files[1])))
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -145,4 +157,3 @@ for (alpha in unique(plot_df$alpha)) {
 
 show(g)
 ggsave(fname, width = 6, height = 2, unit = "in")
-

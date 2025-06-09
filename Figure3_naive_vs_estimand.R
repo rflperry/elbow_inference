@@ -128,7 +128,7 @@ print(nrow(results_df[complete.cases(results_df), ]) / nrow(results_df))
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-save_fname <- paste0("figures/Figure_m=1_n=", n, "_p=", p, "_rank=", rank, "_reps=1000_selection=", selection, "-naive_vs_estimand.png")
+save_fname <- paste0("figures/Figure3_m=1_n=", n, "_p=", p, "_rank=", rank, "_reps=1000_selection=", selection, "-naive_vs_estimand.png")
 
 theme_update(text = element_text(size = 10, family = "Times"))
 
@@ -173,7 +173,7 @@ results_df %>%
   group_by(sigma) %>%
   summarise(detection = mean(selection_r == rank))
 
-save_fname <- paste0("figures/Figure_m=1_n=", n, "_p=", p, "_rank=", rank, "_reps=1000_selection=", selection, "-naive_vs_estimand_scatter.png")
+save_fname <- paste0("figures/Figure3_m=1_n=", n, "_p=", p, "_rank=", rank, "_reps=1000_selection=", selection, "-naive_vs_estimand_scatter.png")
 g <- ggplot(
   results_df,
   aes(x = pve, y = pve_naive, col = as.factor(sigma)),

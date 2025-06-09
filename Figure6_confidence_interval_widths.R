@@ -34,7 +34,7 @@ args <- parser$parse_args()
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-fname <- paste0("figures/Figure4_", sub("\\.RData$", ".png", basename(args$input_file)))
+fname <- paste0("figures/Figure6_", sub("\\.RData$", ".png", basename(args$input_file)))
 
 # # selection_rule <- "elbow"
 # if (selection_rule == "zg") {

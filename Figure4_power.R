@@ -35,8 +35,8 @@ args <- parser$parse_args()
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-detection_fname <- paste0("figures/Figure5_", sub("\\.RData$", "-detection_probability.png", basename(args$input_file)))
-power_fname <- paste0("figures/Figure5_", sub("\\.RData$", "-power.png", basename(args$input_file)))
+detection_fname <- paste0("figures/Figure4_", sub("\\.RData$", "-detection_probability.png", basename(args$input_file)))
+power_fname <- paste0("figures/Figure4_", sub("\\.RData$", "-power.png", basename(args$input_file)))
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
