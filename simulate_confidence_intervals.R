@@ -87,21 +87,16 @@ for (rep in 1:reps) {
         I <- diag(1, n) # Identity matrix
         J <- matrix(1 / n, n, n) # Matrix with all elements equal to 1/n
         C <- I - J # Centering matrix
-
         duv <- svd(C)
 
         H <- duv$u %*% sqrt(diag(duv$d))
-
         data <- t(H) %*% as.matrix(sim$obsv_mat)
-
-        # data <- scale(data, center = TRUE, scale = FALSE)
-
         SCALAR <- max(data) / 2 * sqrt(n)
-
         data <- data / SCALAR
 
-        duv <- svd(data)
+        sim$mean_mat <- t(H) %*% as.matrix(sim$mean_mat) / SCALAR
 
+        duv <- svd(data)
         vals <- duv$d
 
         sigma_hat <- sqrt(median(sqrt(vals))^2 / (max(n, p) * qmp(0.5, svr = max(n, p) / min(n, p))))

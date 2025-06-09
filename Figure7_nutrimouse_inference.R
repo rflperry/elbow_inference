@@ -17,13 +17,12 @@ source("./scripts/functions/estimation.R")
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# 	PreliMinaries
+# 	Preliminaries
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
 eigen <- TRUE
 alpha <- 0.1
-
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -68,8 +67,13 @@ sigma <- sqrt(median(sqrt(vals))^2 / (max(n, p) * qmp(0.5, svr = max(n, p) / min
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-set.seed(6)
-noise <- array(rnorm(n * p, sd = sigma), dim = c(n, p))
+## Uncomment out the following lines, and comment out the readRDS
+##  line to apply the thinning procedure from scratch
+# set.seed(6)
+# noise <- array(rnorm(n * p, sd = sigma), dim = c(n, p))
+# saveRDS(noise, file = "data/nutrimouse_noise_array.rds")
+noise <- readRDS("data/nutrimouse_noise_array.rds")
+
 c <- sqrt(1)
 data1 <- data + c * noise
 data2 <- data - noise / c
@@ -108,7 +112,7 @@ g <- ggplot(
   theme_bw() +
   scale_y_continuous(limits = c(0, NA))
 print(g)
-ggsave(paste0("figures/Figure6-nutrimouse_screeplot.png"), width = 2, height = 2, unit = "in")
+ggsave(paste0("figures/Figure7-nutrimouse_screeplot.png"), width = 2, height = 2, unit = "in")
 
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -194,4 +198,4 @@ g <- ggplot(
   ) +
   scale_y_continuous(limits = c(0, NA))
 plot(g)
-ggsave(paste0("figures/Figure6-nutrimouse_confidence_intervals.png"), width = 4, height = 2, unit = "in")
+ggsave(paste0("figures/Figure7-nutrimouse_confidence_intervals.png"), width = 4, height = 2, unit = "in")

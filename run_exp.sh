@@ -123,12 +123,12 @@ timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 fname="simulate_confidence_intervals"
 log_file="logs/$fname"_"$timestamp.log"
 
-# Rscript "$fname.R" > "$log_file" \
-#     --sigmas 0.1 0.2 \
-#     --alpha 0.1 \
-#     --var_est \
-#     --reps 10000 \
-#     2>&1
+Rscript "$fname.R" > "$log_file" \
+    --sigmas 0.1 0.2 \
+    --alpha 0.1 \
+    --var_est \
+    --reps 10000 \
+    2>&1
 
 # Rscript "$fname.R" > "$log_file" \
 #     --sigmas 0.1 \
@@ -151,12 +151,12 @@ log_file="logs/$fname"_"$timestamp.log"
 #     --var_est \
 #     2>&1
 
-Rscript "$fname.R" > "$log_file" \
-    --sigmas 0.1 \
-    --alpha 0.9 \
-    --reps 10000 \
-    --var_est \
-    2>&1
+# Rscript "$fname.R" > "$log_file" \
+#     --sigmas 0.1 \
+#     --alpha 0.9 \
+#     --reps 10000 \
+#     --var_est \
+#     2>&1
 
 # #
 # #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
