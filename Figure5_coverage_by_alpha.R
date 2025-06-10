@@ -79,6 +79,7 @@ head(results_df)
 
 plot_df <- results_df %>%
     subset(sigma == 0.1) %>%
+    subset(tested_k <= 5) %>%
     mutate(
         method = case_when(
             method == "Selective inference" ~ "Selective",

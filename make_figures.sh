@@ -70,16 +70,15 @@ Rscript Figure6_confidence_interval_widths.R \
 #     "data/sim_conf_ints_alpha=0.3_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData" \
 #     "data/sim_conf_ints_alpha=0.5_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData" \
 #     "data/sim_conf_ints_alpha=0.7_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData" \
-#     "data/sim_conf_ints_alpha=0.9_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData" \
+#     "data/sim_conf_ints_alpha=0.9_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData"
 
-# # CI coverage: across alphas
+# CI coverage: across alphas
 # Rscript Figure5_coverage_by_alpha.R \
 #     "data/sim_conf_ints_alpha=0.1_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData" \
 #     "data/sim_conf_ints_alpha=0.3_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData" \
 #     "data/sim_conf_ints_alpha=0.5_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData" \
 #     "data/sim_conf_ints_alpha=0.7_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData" \
-#     "data/sim_conf_ints_alpha=0.9_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData" \
-#     --var_est
+#     "data/sim_conf_ints_alpha=0.9_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData"
 
 # #
 # #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
