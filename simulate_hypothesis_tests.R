@@ -6,6 +6,7 @@ library(stringr)
 library(scales)
 library(latex2exp)
 library(argparse)
+library(RMTstat)
 
 source("./scripts/functions/hypothesis_tests.R")
 source("./scripts/functions/selection_methods.R")
@@ -28,6 +29,7 @@ parser$add_argument("--sigmas",
   nargs = "+",
   default = c(0.1, 0.2, 0.4, 0.5, 0.7, 1)
 )
+parser$add_argument("--var_est", action='store_true', default = FALSE)
 print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
 
@@ -82,6 +84,13 @@ for (rep in 1:reps) {
         vals <- duv$d
       }
 
+      # Estimate sigma if specified
+      if (var_est) {
+        sigma_hat <- sqrt(median(sqrt(vals))^2 / (max(n, p) * qmp(0.5, svr = max(n, p) / min(n, p))))
+      } else{
+        sigma_hat <- sigma
+      }
+
       frob_norm <- sqrt(sum(sim$mean_mat^2))
 
       noise_svals <- svd(sim$obsv_mat - sim$mean_mat)$d
@@ -98,7 +107,7 @@ for (rep in 1:reps) {
         tr_mean <- (t(duv$u[, k]) %*% sim$mean_mat %*% duv$v[, k])[1]
 
         # Compute intervals
-        base_results <- c(rep, n, p, sigma, m, rank, r, k, tr_mean, frob_norm, vals[k], sum(vals), sqrt(vals[1]), noise_svals[1], sum(noise_svals^2))
+        base_results <- c(rep, n, p, sigma, m, rank, r, k, tr_mean, frob_norm, vals[k], sum(vals), sqrt(vals[1]), noise_svals[1], sum(noise_svals^2), sigma_hat)
 
         # Choi p-value
         # choi_pvalue <- choi_test_pvalue(vals, k = k, n = n, p = p, sigma = sigma, eigen = eigen)
@@ -111,7 +120,7 @@ for (rep in 1:reps) {
           bounds <- compute_elbow_bounds(vals, k)
         }
 
-        si_pvalue <- si_test_pvalue(vals, k = k, n = n, p = p, sigma = sigma, bounds = bounds, eigen = eigen)
+        si_pvalue <- si_test_pvalue(vals, k = k, n = n, p = p, sigma = sigma_hat, bounds = bounds, eigen = eigen)
         results <- c(results, "Selective inference", base_results, si_pvalue)
       }
     })
@@ -126,7 +135,7 @@ for (rep in 1:reps) {
 
 header <- c(
   "method", "rep", "n", "p", "sigma", "signal_strength",
-  "rank", "selection_r", "tested_k", "signal", "frob_norm", "val_k", "val_sum", "mean_op_norm", "noise_op_norm", "noise_frob_norm", "p_value"
+  "rank", "selection_r", "tested_k", "signal", "frob_norm", "val_k", "val_sum", "mean_op_norm", "noise_op_norm", "noise_frob_norm", "sigma_hat", "p_value"
 )
 
 results_df <- data.frame(

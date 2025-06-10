@@ -34,7 +34,7 @@ args <- parser$parse_args()
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #
 
-fname <- paste0("figures/Figure4_", sub("\\.RData$", ".png", basename(args$input_file)))
+fname <- paste0("figures/Figure6_", sub("\\.RData$", ".png", basename(args$input_file)))
 
 # # selection_rule <- "elbow"
 # if (selection_rule == "zg") {
@@ -87,7 +87,7 @@ plot_df <- results_df %>%
 
 plot_df <- plot_df %>%
   subset(
-    tested_k <= 6
+    tested_k <= 5
     ) %>%
   group_by(
     method, sigma, precision, tested_k
@@ -159,5 +159,4 @@ g <- ggplot(plot_df, aes(x = tested_k, y = mean_pve)) +
       sigma = function(x) paste0("sigma = " , x))
     )
 show(g)
-ggsave(fname, width = 5.5, height = 4, unit = "in")
-
+ggsave(fname, width = 6.5, height = 2.66, unit = "in")

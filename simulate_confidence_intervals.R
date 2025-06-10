@@ -6,6 +6,7 @@ library(stringr)
 library(scales)
 library(latex2exp)
 library(argparse)
+library(RMTstat)
 
 source("./scripts/functions/confidence_intervals.R")
 source("./scripts/functions/selection_methods.R")
@@ -31,6 +32,7 @@ parser$add_argument("--sigmas",
 parser$add_argument("--c", type = "double", default = sqrt(1))
 parser$add_argument("--choi", type = "logical", default = FALSE)
 parser$add_argument("--mle", type = "logical", default = TRUE)
+parser$add_argument("--var_est", action='store_true', default = TRUE)
 parser$add_argument("--signal_alpha_frac", type = "double", default = 0.75)
 print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
@@ -79,17 +81,45 @@ for (rep in 1:reps) {
       # Simulate data
       sim <- simulate_matrix(n, p, sigma, rank, m, degree = degree, eigen = eigen, thin_c = c)
 
-      # Extract quantities
-      duv <- svd(sim$obsv_mat)
+      # Estimate sigma if specified
+      if (var_est) {
+        # #  Transform data instead
+        # I <- diag(1, n) # Identity matrix
+        # J <- matrix(1 / n, n, n) # Matrix with all elements equal to 1/n
+        # C <- I - J # Centering matrix
+        # duv <- svd(C)
 
-      if (eigen) {
-        vals <- duv$d^2
-      } else {
+        # H <- duv$u %*% sqrt(diag(duv$d))
+        # sim$obsv_mat <- t(H) %*% as.matrix(sim$obsv_mat)
+        # SCALAR <- max(sim$obsv_mat) / 2 * sqrt(n)
+        # sim$obsv_mat <- sim$obsv_mat / SCALAR
+
+        # sim$mean_mat <- t(H) %*% as.matrix(sim$mean_mat) / SCALAR
+
+        duv <- svd(sim$obsv_mat)
         vals <- duv$d
+        sigma_hat <- sqrt(median(sqrt(vals))^2 / (max(n, p) * qmp(0.5, svr = max(n, p) / min(n, p))))
+
+      } else{
+        # duv <- svd(sim$obsv_mat)
+        # vals <- duv$d
+        sigma_hat <- sigma
       }
 
-      sigma1 <- sqrt(sigma^2 * (1 + c^2))
-      sigma2 <- sqrt(sigma^2 * (1 + 1 / c^2))
+      sigma1 <- sqrt(sigma_hat^2 * (1 + c^2))
+      sigma2 <- sqrt(sigma_hat^2 * (1 + 1 / c^2))
+
+      # Thin
+      W <- array(rnorm(n*p, sd=sigma_hat), dim=c(n, p))
+      sim$obsv_mat1 <- sim$obsv_mat + W * sqrt(1 + c^2)
+      sim$obsv_mat2 <- sim$obsv_mat - W * sqrt(1 + 1/c^2)
+
+      # Estimate svals on thin 1
+      duv <- svd(sim$obsv_mat1)
+      vals <- duv$d
+      if (eigen) {
+        vals <- duv$d^2
+      }
 
       X2_frob_norm <- sqrt(sum(sim$obsv_mat2^2))
       frob2_hat <- X2_frob_norm^2 - n * p * sigma2^2
@@ -110,7 +140,7 @@ for (rep in 1:reps) {
         tr_mean <- (t(duv$u[, k]) %*% sim$mean_mat %*% duv$v[, k])[1]
 
         # Compute intervals
-        base_results <- c(rep, n, p, sigma, c, m, rank, r, k, tr_mean, frob_norm, vals[k], sum(vals), X2_frob_norm, frob_ci, frob_mle, frob2_hat)
+        base_results <- c(rep, n, p, sigma, c, m, rank, r, k, tr_mean, frob_norm, vals[k], sum(vals), X2_frob_norm, frob_ci, frob_mle, frob2_hat, sigma_hat)
 
         if (choi) {
           # Choi p-value
@@ -180,7 +210,7 @@ for (rep in 1:reps) {
 header <- c(
   "method", "rep", "n", "p", "sigma", "thin_c", "signal_strength",
   "rank", "selection_r", "tested_k", "signal", "frob_norm", "val_k", "val_sum",
-  "X2_frob_norm", "frob_ci_lower", "frob_ci_upper", "frob_mle", "frob2_hat", "ci_lower", "ci_upper", "mle"
+  "X2_frob_norm", "frob_ci_lower", "frob_ci_upper", "frob_mle", "frob2_hat", "sigma_hat", "ci_lower", "ci_upper", "mle"
 )
 
 results_df <- data.frame(

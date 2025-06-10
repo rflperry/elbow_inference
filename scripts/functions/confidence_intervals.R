@@ -114,7 +114,7 @@ get_nc_chsq_ci <- function(frob_hat, df, alpha) {
     function(frob) {
       pchisq(frob_hat, df = df, ncp = frob) - (1 - alpha / 2)
     },
-    interval = c(0, n * p * 100)
+    interval = c(0, df * 100)
   )$root
 
 
