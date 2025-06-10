@@ -16,32 +16,32 @@ parser <- ArgumentParser()
 parser$add_argument("input_files", nargs = "+", help = "Files to be displayed")
 parser$add_argument("--sigma",
     type = "double",
-    default = 0.2
+    default = 0.1
 )
-parser$add_argument("--var_est", action='store_true', default = FALSE)
+# parser$add_argument("--var_est", action='store_true', default = FALSE)
 print(commandArgs(trailingOnly = TRUE))
 args <- parser$parse_args()
 
-args <- list()
-if(args.var_est) {
-    args$input_files <- c(
-    "data/sim_conf_ints_alpha=0.1_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
-    "data/sim_conf_ints_alpha=0.3_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
-    "data/sim_conf_ints_alpha=0.5_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
-    "data/sim_conf_ints_alpha=0.7_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
-    "data/sim_conf_ints_alpha=0.9_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData"
-)
-} else {
-    args$input_files <- c(
-    "data/sim_conf_ints_alpha=0.1_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
-    "data/sim_conf_ints_alpha=0.3_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
-    "data/sim_conf_ints_alpha=0.5_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
-    "data/sim_conf_ints_alpha=0.7_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
-    "data/sim_conf_ints_alpha=0.9_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData"
-)
-}
+# args <- list()
+# if(args.var_est) {
+#     args$input_files <- c(
+#     "data/sim_conf_ints_alpha=0.1_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
+#     "data/sim_conf_ints_alpha=0.3_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
+#     "data/sim_conf_ints_alpha=0.5_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
+#     "data/sim_conf_ints_alpha=0.7_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData",
+#     "data/sim_conf_ints_alpha=0.9_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75_var_est=TRUE.RData"
+# )
+# } else {
+#     args$input_files <- c(
+#     "data/sim_conf_ints_alpha=0.1_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
+#     "data/sim_conf_ints_alpha=0.3_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
+#     "data/sim_conf_ints_alpha=0.5_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
+#     "data/sim_conf_ints_alpha=0.7_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData",
+#     "data/sim_conf_ints_alpha=0.9_c=1_choi=FALSE_m=1_method=zg_mle=TRUE_n=50_p=10_rank=5_reps=10000_signal_alpha_frac=0.75.RData"
+# )
+# }
 
-args$sigma <- 0.1
+# args$sigma <- 0.1
 #
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 	Plot the figure
